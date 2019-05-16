@@ -1,53 +1,85 @@
-const vscode = require('vscode');
-const PromiseSeries = require('promise-series');
+const { window } = require("vscode")
+const vscode = require("vscode")
 
-var activeContext;
-var disposables = [];
+var activeContext
+var disposables = []
 
-function activate(context) {
-  loadMacros(context);
-  activeContext = context;
-  vscode.workspace.onDidChangeConfiguration(() => {
-    disposeMacros();
-    loadMacros(activeContext);
-  });
+exports.activate = function activate(context) {
+    loadMacros(context)
+    activeContext = context
+    vscode.workspace.onDidChangeConfiguration(() => {
+        // dispose of macros
+        for (var disposable of disposables) {
+            disposable.dispose()
+        }
+        // reload them
+        loadMacros(activeContext)
+    })
 }
-exports.activate = activate;
 
-function deactivate() {
-}
-exports.deactivate = deactivate;
+exports.deactivate = function deactivate() {}
 
 function loadMacros(context) {
-  const settings = vscode.workspace.getConfiguration('macros');
-  const macros = Object.keys(settings).filter((prop) => {
-    return prop !== 'has' && prop !== 'get' && prop !== 'update';
-  });
+    // get the macros from the settings file
+    const macros = vscode.workspace.getConfiguration("macros")
 
-  macros.forEach((name) => {
-    const disposable = vscode.commands.registerCommand(`macros.${name}`, function () {
-      const series = new PromiseSeries();
-      settings[name].forEach((action) => {
-        series.add(() => {
-          // support objects so that we can pass arguments from user settings to the commands
-          if (typeof action === "object"){
-            vscode.commands.executeCommand(action.command, action.args);
-          }
-          // support commands as strings (no args)
-          else{
-            vscode.commands.executeCommand(action);
-          }
+    // look at each macro
+    for (const name in macros) {
+        // skip the built-in ones
+        if (name == "has" || name == "get" || name == "update") {
+            continue
+        }
+        // register each one as a command
+        const disposable = vscode.commands.registerCommand(`macros.${name}`, async function() {
+            // iterate over each action
+            for (const action of macros[name]) {
+                // if its a string assume its a command
+                if (typeof action == "string") {
+                    await vscode.commands.executeCommand(action)
+                    // otherwise check if its an object
+                } else if (action instanceof Object) {
+                    //
+                    // Check if its a javascript macro
+                    //
+                    if (typeof action.javascript == "string") {
+                        eval(action.javascript)
+                        continue
+                    }
+                    //
+                    // Check for injections
+                    //
+                    let replacements = []
+                    let actionCopy = JSON.parse(JSON.stringify(action))
+                    if (action.injections) {
+                        for (let eachInjection of action.injections) {
+                            //
+                            // Compute the value the user provided
+                            //
+                            let value = eval(eachInjection.withResultOf)
+                            if (value instanceof Promise) {
+                                value = await value
+                            }
+                            value = `${value}`
+                            //
+                            // replace it in the arguments
+                            //
+                            for (let eachKey in actionCopy.args) {
+                                // if its a string value, then perform a replacement
+                                // TODO, this is currently shallow, it should probably be recursive
+                                if (typeof actionCopy.args[eachKey] == "string") {
+                                    actionCopy.args[eachKey] = actionCopy.args[eachKey].replace(eachInjection.replace, value)
+                                }
+                            }
+                        }
+                    }
+                    //
+                    // run the command
+                    //
+                    await vscode.commands.executeCommand(actionCopy.command, actionCopy.args)
+                }
+            }
         })
-      })
-      return series.run();
-    })
-    context.subscriptions.push(disposable);
-    disposables.push(disposable);
-  });
-}
-
-function disposeMacros() {
-  for (var disposable of disposables) {
-    disposable.dispose();
-  }
+        context.subscriptions.push(disposable)
+        disposables.push(disposable)
+    }
 }
