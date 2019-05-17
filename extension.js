@@ -1,6 +1,7 @@
 const { window } = require("vscode")
 const vscode = require("vscode")
 const { execSync } = require('child_process')
+const path = require('path')
 
 // see https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
 function escapeRegExp(string) {
