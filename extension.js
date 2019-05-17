@@ -32,7 +32,7 @@ async function executeMacro(name) {
             // Check if its a javascript macro
             //
             if (typeof action.javascript == "string") {
-                eval(action.javascript)
+                await eval(`(async()=>{${action.javascript}})()`)
                 continue
             }
             //
@@ -81,7 +81,7 @@ function loadMacros(context) {
             continue
         }
         // register each one as a command
-        const disposable = vscode.commands.registerCommand(`macros.command.${name}`, ()=>executeMacro(name))
+        const disposable = vscode.commands.registerCommand(`macros.${name}`, ()=>executeMacro(name))
         context.subscriptions.push(disposable)
         disposables.push(disposable)
     }
