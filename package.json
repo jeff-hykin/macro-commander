@@ -22,7 +22,13 @@
             "properties": {
                 "macros": {}
             }
-        }
+        },
+        "commands": [
+            {
+                "command": "macro.run",
+                "title": "Run A Macro"
+            }
+        ]
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install"

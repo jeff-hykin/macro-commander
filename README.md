@@ -1,83 +1,55 @@
-# Macros
+## What does this do?
+It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
+Example actions are powerful smart snippets, formatting the current file, renaming many files, pushing git changes, and running command line commands.
 
-Brings simple, powerful custom macros support to VS Code.
-Made with <3 by [geddski](http://gedd.ski)
-
-See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
-
-## Create Custom Macros
-
-Create your own custom macros by adding them to your `settings.json` (Code|File > Preferences > User Settings)
-
-For example:
-
+## How do I use it?
+1. Find the name of commands you want to run (go to the VS Code keybindings.json to find the names of things)
+2. Open up your settings.json and create a new section like this:
 ```json
 "macros": {
-    "commentDown": [
-        "editor.action.copyLinesDownAction",
-        "cursorUp",
-        "editor.action.addCommentLine",
-        "cursorDown"
+    "exampleMacro1": [
+        // put commands here
     ]
-}
 ```
-
-This macro creates a copy of the current line, comments out the original line, and moves the cursor down to the copy.
-
-Your macros can run any built-in VS Code action, and even actions from other extensions. 
-To see all the names of possible actions VS Code can run, see `Default Keyboard Shortcuts` (Code|File > Preferences > Keyboard Shortcuts) 
-
-Give your macros names that briefly describe what they do.
-
-## Add Keybindings to Run your Macros
-
-in `keybindings.json` (Code|File > Preferences > Keyboard Shortcuts) add bindings to your macros:
-
+3. Open up your keybindings.json and add the name of the macro you just made to a keybinding
 ```json
 {
   "key": "ctrl+cmd+/",
-  "command": "macros.commentDown"
+  "command": "macros.exampleMacro1"
 }
 ```
+Now whenever those keys are pressed, the macro commands will execute
 
-Notice that `macros.my_macro_name` has to match what you named your macro. 
-
-## Passing Arguments to Commands
-
-Many commands accept arguments, like the "type" command which lets you insert text into the editor. For these cases use an object instead of a string when specifying the command to call in your `settings.json`:
-
+## What are some examples?
+See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
 ```json
 "macros": {
-  "addSemicolon": [
-    "cursorEnd",
-      {"command": "type", "args": {"text": ";"}}
-  ]
-}
+    "exampleMacro1": [
+        // a simple command for formatting a documnet
+        "editor.action.formatDocument",
+        // run a console command 
+        {
+            "command": "workbench.action.terminal.sendSequence",
+            "args": { "text": "echo hello\n" }
+        },
+        // javascript execution (see https://code.visualstudio.com/api/extension-capabilities/common-capabilities)
+        {
+            "javascript": "
+                let userInput = await window.showInputBox()
+                window.showInformationMessage(`You entered: ${userInput}`)
+            "
+        },
+        // combine javascript and commands
+        {
+            "injections" : [
+                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" }
+            ],
+            "command": "workbench.action.terminal.sendSequence",
+            "args": { "text": "echo $currentFile\n" }
+        }
+    ]
 ```
 
-## Executing Snippets as part of a Macro
-
-Macros can also execute any of your snippets which is super neat. Just insert the same text that you would normally type for the snippet, followed by the `insertSnippet` command:
-
-```json
-"macros": {
-  "doMySnippet": [
-    {"command": "type", "args": {"text": "mySnippetPrefixHere"}},
-    "insertSnippet"
-  ]
-}
-```
-
-## License
-MIT
-
-## Known Issues
-
-Doesn't currently add macros to command pallete (have to use keybindings).
-
-
-## Release Notes
-
-### 1.0.0
-
-Initial release of Macros
+## Who made this?
+The original extension was made by [geddski](http://gedd.ski)
+I (Jeff Hykin) modified it to be synchronous and have javascript support
