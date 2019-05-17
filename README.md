@@ -26,12 +26,16 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
 ```json
 "macros": {
     "exampleMacro1": [
-        // a simple command for formatting a documnet
-        "editor.action.formatDocument",
-        // run a console command 
+        // a simple command to create a new terminal
+        "workbench.action.terminal.new",
+        // a command with arguments, that sends text to the terminal
         {
-            "command": "workbench.action.terminal.sendSequence",
+            "command": "workbench.action.terminal.sendSequence", 
             "args": { "text": "echo hello\n" }
+        },
+        // run a hidden console command (runs in the background)
+        {
+            "hiddenConsole": "echo Hello"
         },
         // javascript execution (see https://code.visualstudio.com/api/extension-capabilities/common-capabilities)
         {
@@ -47,7 +51,14 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             ],
             "command": "workbench.action.terminal.sendSequence",
             "args": { "text": "echo $currentFile\n" }
-        }
+        },
+        // combine javascript and hidden console commands
+        {
+            "injections" : [
+                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" }
+            ],
+            "hiddenConsole": "echo $currentFile\n > ~/Desktop/test.txt",
+        },
     ]
 ```
 
