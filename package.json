@@ -3,7 +3,7 @@
     "displayName": "sync-macros",
     "description": "automate repetitive actions with custom macros",
     "icon": "macro-icon.png",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "jeff-hykin",
     "repository": "https://github.com/jeff-hykin/sync-macros",
     "engines": {
