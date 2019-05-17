@@ -2,6 +2,7 @@
     "name": "sync-macros",
     "displayName": "sync-macros",
     "description": "automate repetitive actions with custom macros",
+    "icon" : "macro-icon.png",
     "version": "1.0.0",
     "publisher": "jeff-hykin",
     "repository": "https://github.com/jeff-hykin/sync-macros",
