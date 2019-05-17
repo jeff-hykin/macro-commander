@@ -52,4 +52,4 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
 
 ## Who made this?
 The original extension was made by [geddski](http://gedd.ski)
-I (Jeff Hykin) modified it to be synchronous and have javascript support
+I (Jeff Hykin) modified it to be synchronous, have javascript support, and allow named execution
