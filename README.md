@@ -21,7 +21,7 @@ Example sub-actions are; smart snippets, formatting the current file, renaming m
 ```
 Now whenever those keys are pressed, the macro commands will execute
 
-## What are some examples?
+## What are some macro examples?
 See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
 ```json
 "macros": {
@@ -53,4 +53,4 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
 
 ## Who made this?
 The original extension was made by [geddski](http://gedd.ski)
-I (Jeff Hykin) modified it to be synchronous, have javascript support, and allow named execution
+<br>I modified it to be synchronous, have javascript support, and allow named execution
