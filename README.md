@@ -1,17 +1,18 @@
 ## What does this do?
 It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
-Example actions are powerful smart snippets, formatting the current file, renaming many files, pushing git changes, and running command line commands.
+Example sub-actions are; smart snippets, formatting the current file, renaming many files, pushing git changes, and running command line commands.
 
 ## How do I use it?
 1. Find the name of commands you want to run (go to the VS Code keybindings.json to find the names of things)
-2. Open up your settings.json and create a new section like this:
+2. Open up your VS Code settings.json and create a new section like this:
 ```json
 "macros": {
     "exampleMacro1": [
         // put commands here
     ]
+}
 ```
-3. Open up your keybindings.json and add the name of the macro you just made to a keybinding
+3. Open up your VS Code keybindings.json and add the name of the macro you just made to a keybinding
 ```json
 {
   "key": "ctrl+cmd+/",
