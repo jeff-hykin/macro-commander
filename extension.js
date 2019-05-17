@@ -1,5 +1,11 @@
 const { window } = require("vscode")
 const vscode = require("vscode")
+const { execSync } = require('child_process')
+
+// see https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
 
 let activeContext
 let disposables = []
@@ -53,19 +59,28 @@ async function executeMacro(name) {
                     //
                     // replace it in the arguments
                     //
+                    let replacer = (name) => {
+                        if (typeof name == 'string') {
+                            return name.replace(RegExp(escapeRegExp(eachInjection.replace), "g"), value)
+                        }
+                        return name
+                    }
                     for (let eachKey in actionCopy.args) {
                         // if its a string value, then perform a replacement
                         // TODO, this is currently shallow, it should probably be recursive
                         if (typeof actionCopy.args[eachKey] == "string") {
-                            actionCopy.args[eachKey] = actionCopy.args[eachKey].replace(eachInjection.replace, value)
+                            actionCopy.args[eachKey] = replacer(actionCopy.args[eachKey])
                         }
                     }
+                    // replace it in the console command
+                    actionCopy.hiddenConsole = replacer(actionCopy.hiddenConsole)
                 }
             }
             //
             // run the command
             //
-            await vscode.commands.executeCommand(actionCopy.command, actionCopy.args)
+            actionCopy.hiddenConsole && execSync(actionCopy.hiddenConsole)
+            actionCopy.command && await vscode.commands.executeCommand(actionCopy.command, actionCopy.args)
         }
     }
 }
