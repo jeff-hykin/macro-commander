@@ -22,7 +22,9 @@ All of the `"command":`'s can be copied and pasted into the macro
     ]
 }
 ```
-3. Open up your VS Code keybindings.json and add the name of the macro you just made to a keybinding
+3. To run the macro open the command pallet (cmd+shift+P or ctrl+shift+P) and type `run macro` then pick which one you want to run.
+4. Create a keybinding to the macro (*its different from normal keybindings)
+Open up your VS Code keybindings.json, add the name of the macro you just made to a keybinding
 NOTE: VS Code will tell you the command is invalid, ignore that and save it anyways
 (see https://github.com/jeff-hykin/macro-commander/issues/1#issuecomment-505951698 as to why)
 ```json
@@ -94,7 +96,23 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             // here's an ugly way of doing that
             "hiddenConsole" : "bash <<THE_CMD\nsource ~/.bash_profile;cd \"$currentFolder\";\necho now I can use aliases\nTHE_CMD"
         }
+    ],
+    "exampleOfCommonInjections" : [
+        {
+            "injections" : [
+                { "replace": "$userInput",       "withResultOf": "await window.showInputBox()" },
+                { "replace": "$currentFolder",   "withResultOf": "vscode.workspace.rootPath" },
+                { "replace": "$currentFile",     "withResultOf": "window.activeTextEditor.document.uri.fsPath" },
+                { "replace": "$currentFileName", "withResultOf": "path.basename(window.activeTextEditor.document.uri.fsPath)" },
+                { "replace": "$currentFileNameNoExtension", "withResultOf": "path.basename(window.activeTextEditor.document.uri.fsPath).replace(/\\.[^/.]+$/, '')" },
+                { "replace": "$currentFileDir", "withResultOf": "path.dirname(window.activeTextEditor.document.uri.fsPath)" },
+            ],
+            // I wanted to use aliases from my bash profile
+            // here's an ugly way of doing that
+            "hiddenConsole" : "echo $userInput"
+        }
     ]
+}
 ```
 
 ## Who made this?
