@@ -109,3 +109,8 @@ vscode.commands.registerCommand('macro.run', async () => {
     let result = await window.showQuickPick(macroNames)
     executeMacro(result)
 })
+
+// create a command for running macros by name
+vscode.commands.registerCommand('macro.this.is.a.real.dummy.command', async () => {
+    window.showInformationMessage(`Congratulations you ran the dummy command`)
+})

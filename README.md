@@ -1,18 +1,24 @@
 ## What does this do?
 It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
-Example sub-actions are; smart snippets, formatting the current file, renaming many files, pushing git changes, and running command line commands.
+Example sub-actions are; running command line commands, opening a debugging session, pushing git changes, renaming many files, creating smart snippets, formatting the current file and more.
 
 ## How do I use it?
-1. Find the name of commands you want to run (go to the VS Code keybindings.json to find the names of things)
+1. Find the name of commands you want to run 
+Do can do this by going to the VS Code keybindings.json
+(go to gear-icon -> keybindings, then press the {}'s in the top right corner)
+All of the `"command":`'s can be copied and pasted into the macro
 2. Open up your VS Code settings.json and create a new section like this:
+(go to gear-icon -> settings, then press the {}'s in the top right corner)
 ```json
 "macros": {
     "exampleMacro1": [
-        // put commands here
+        "macro.this.is.a.real.dummy.command"
     ]
 }
 ```
 3. Open up your VS Code keybindings.json and add the name of the macro you just made to a keybinding
+NOTE: VS Code will tell you the command is invalid, ignore that and save it anyways
+(see https://github.com/jeff-hykin/macro-commander/issues/1#issuecomment-505951698 as to why)
 ```json
 {
   "key": "ctrl+cmd+/",
@@ -26,39 +32,62 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
 ```json
 "macros": {
     "exampleMacro1": [
-        // a simple command to create a new terminal
+        // a simple command to open a new terminal
         "workbench.action.terminal.new",
         // a command with arguments, that sends text to the terminal
         {
             "command": "workbench.action.terminal.sendSequence", 
             "args": { "text": "echo hello\n" }
         },
-        // run a hidden console command (runs in the background)
-        {
-            "hiddenConsole": "echo Hello"
-        },
-        // javascript execution (see https://code.visualstudio.com/api/extension-capabilities/common-capabilities)
-        {
-            "javascript": "
-                let userInput = await window.showInputBox()
-                window.showInformationMessage(`You entered: ${userInput}`)
-            "
-        },
+    ],
+    "exampleMacro2" : [
+        // a simple command to open a new terminal
+        "workbench.action.terminal.new",
         // combine javascript and commands
         {
             "injections" : [
-                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" }
+                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" },
+                { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
             ],
             "command": "workbench.action.terminal.sendSequence",
-            "args": { "text": "echo $currentFile\n" }
+            "args": { "text": "echo the curren file is: $currentFile\necho the current folder is: $currentFolder\n" }
+        },
+    ],
+    "exampleMacro3" : [
+        // javascript execution (see https://code.visualstudio.com/api/extension-capabilities/common-capabilities)
+        {
+            // this has access to the `vscode` object, the `window` object and the `path` object (from node path)
+            // the javascript is also run inside of an async function, meaning you can use the `await` keyword
+            "javascript": "window.showInformationMessage(`You entered: ${await window.showInputBox()}`)"
+        },
+    ],
+    "exampleMacro4" : [
+        // run a hidden console command (runs in the background)
+        {
+            // NOTE: don't start a command in a hiddenConsole
+            //       that doesn't finish! there's no good way 
+            //       of killing/canceling it
+            // 
+            // this echo will never be seen
+            "hiddenConsole": "touch .gitignore; echo hello\n"
         },
         // combine javascript and hidden console commands
         {
             "injections" : [
-                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" }
+                { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
             ],
-            "hiddenConsole": "echo $currentFile\n > ~/Desktop/test.txt",
+            "hiddenConsole": "cd \"$currentFolder\";touch .gitignore\n",
         },
+    ],
+    "exampleWithBashProfile" : [
+        {
+            "injections" : [
+                { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" }
+            ],
+            // I wanted to use aliases from my bash profile
+            // here's an ugly way of doing that
+            "hiddenConsole" : "bash <<THE_CMD\nsource ~/.bash_profile;cd \"$currentFolder\";\necho now I can use aliases\nTHE_CMD"
+        }
     ]
 ```
 
