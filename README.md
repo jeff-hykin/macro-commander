@@ -2,6 +2,12 @@
 It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
 Example sub-actions are; running command line commands, opening a debugging session, pushing git changes, renaming many files, creating smart snippets, formatting the current file and more.
 
+## What are some use-case examples?
+- A run command that opens up a terminal, starts an SSH connection, and then runs commands on the SSH server
+- A new-project command that goes to where ever you typically save projects, uses the GUI to ask for the name of the project, creates the folder, creates a .gitignore with your preferences, runs an init command, and then opens the folder in your current VS Code window.
+- A command that opens a project folder, pulls the latest changes, opens several files in that folder, and then displays the recent changes in those files.
+- A folder-specific start command, that pulls the latest changes, installs dependiences, formats files, and then opens the debugger with a specific file.
+
 ## How do I use it?
 1. Find the name of commands you want to run 
 Do can do this by going to the VS Code keybindings.json
