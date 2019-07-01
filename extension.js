@@ -8,6 +8,15 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
+function flushEventStack() {
+    // this is a sleep timer for 0 seconds, which sounds dumb
+    // the reason it's useful is because it puts a function on the BOTTOM of the javascript event stack
+    // and then we wait for it to occur 
+    // this means runs all of the already-scheduled things to occur
+    // which is ideal because it makes pop ups and other events happen in a more sequential/timely order
+    return new Promise(r=>setTimeout(r, 0))
+}
+
 let activeContext
 let disposables = []
 let macros = {}
@@ -30,9 +39,11 @@ exports.deactivate = function deactivate() {}
 async function executeMacro(name) {
     // iterate over every action in the macro
     for (const action of macros[name]) {
+        console.log(`action is:`,action)
         // if its a string assume its a command
         if (typeof action == "string") {
             await vscode.commands.executeCommand(action)
+            await flushEventStack()
             // otherwise check if its an object
         } else if (action instanceof Object) {
             //
@@ -40,6 +51,7 @@ async function executeMacro(name) {
             //
             if (typeof action.javascript == "string") {
                 await eval(`(async()=>{${action.javascript}})()`)
+                await flushEventStack()
                 continue
             }
             //
@@ -52,11 +64,13 @@ async function executeMacro(name) {
                     //
                     // Compute the value the user provided
                     //
+                    console.log("starting injection")
                     let value = eval(eachInjection.withResultOf)
                     if (value instanceof Promise) {
                         value = await value
                     }
                     value = `${value}`
+                    console.log("finished injection")
                     //
                     // replace it in the arguments
                     //
