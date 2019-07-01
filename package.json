@@ -3,7 +3,7 @@
     "displayName": "macro-commander (Command Runner)",
     "description": "Keybindings to commandline scripts, along with any VS Code command",
     "icon": "macro-icon.png",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "publisher": "jeff-hykin",
     "repository": "https://github.com/jeff-hykin/macro-commander",
     "engines": {
