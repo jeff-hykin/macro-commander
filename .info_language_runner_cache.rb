@@ -6,7 +6,7 @@ if previous_process_finished_successfully
     system "project sync"
     if -"npm version patch"
         puts "Publishing"
-        system "npm publish"
+        system "vsce publish"
         puts "Finished Publishing"
     end
 end
