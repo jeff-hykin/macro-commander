@@ -1,26 +1,26 @@
 const { window } = require("vscode")
 const vscode = require("vscode")
-const { execSync } = require('child_process')
-const path = require('path')
+const { execSync } = require("child_process")
+const path = require("path")
 
 // see https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
 function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
 }
 
 function flushEventStack() {
     // this is a sleep timer for 0 seconds, which sounds dumb
     // the reason it's useful is because it puts a function on the BOTTOM of the javascript event stack
-    // and then we wait for it to occur 
+    // and then we wait for it to occur
     // this means runs all of the already-scheduled things to occur
     // which is ideal because it makes pop ups and other events happen in a more sequential/timely order
-    return new Promise(r=>setTimeout(r, 0))
+    return new Promise(r => setTimeout(r, 0))
 }
 
 let activeContext
 let disposables = []
 let macros = {}
-let invalidMacroNames = [ "has", "get", "update", "inspect" ]
+let invalidMacroNames = ["has", "get", "update", "inspect"]
 exports.activate = function activate(context) {
     loadMacros(context)
     activeContext = context
@@ -39,7 +39,7 @@ exports.deactivate = function deactivate() {}
 async function executeMacro(name) {
     // iterate over every action in the macro
     for (const action of macros[name]) {
-        console.log(`action is:`,action)
+        console.log(`action is:`, action)
         // if its a string assume its a command
         if (typeof action == "string") {
             await vscode.commands.executeCommand(action)
@@ -74,8 +74,8 @@ async function executeMacro(name) {
                     //
                     // replace it in the arguments
                     //
-                    let replacer = (name) => {
-                        if (typeof name == 'string') {
+                    let replacer = name => {
+                        if (typeof name == "string") {
                             return name.replace(RegExp(escapeRegExp(eachInjection.replace), "g"), value)
                         }
                         return name
@@ -95,7 +95,7 @@ async function executeMacro(name) {
             // run the command
             //
             actionCopy.hiddenConsole && execSync(actionCopy.hiddenConsole)
-            actionCopy.command && await vscode.commands.executeCommand(actionCopy.command, actionCopy.args)
+            actionCopy.command && (await vscode.commands.executeCommand(actionCopy.command, actionCopy.args))
         }
     }
 }
@@ -111,20 +111,20 @@ function loadMacros(context) {
             continue
         }
         // register each one as a command
-        const disposable = vscode.commands.registerCommand(`macros.${name}`, ()=>executeMacro(name))
+        const disposable = vscode.commands.registerCommand(`macros.${name}`, () => executeMacro(name))
         context.subscriptions.push(disposable)
         disposables.push(disposable)
     }
 }
 
 // create a command for running macros by name
-vscode.commands.registerCommand('macro.run', async () => {
-    let macroNames = Object.keys(macros).filter(each=>macros[each] instanceof Array)
+vscode.commands.registerCommand("macro.run", async () => {
+    let macroNames = Object.keys(macros).filter(each => macros[each] instanceof Array)
     let result = await window.showQuickPick(macroNames)
     executeMacro(result)
 })
 
 // create a command for running macros by name
-vscode.commands.registerCommand('macro.this.is.a.real.dummy.command', async () => {
+vscode.commands.registerCommand("macro.this.is.a.real.dummy.command", async () => {
     window.showInformationMessage(`Congratulations you ran the dummy command`)
 })
