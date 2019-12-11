@@ -3,6 +3,45 @@ const vscode = require("vscode")
 const { execSync } = require("child_process")
 const path = require("path")
 
+// 
+// globals
+// 
+let activeContext
+let disposables = []
+let macros = {}
+let invalidMacroNames = ["has", "get", "update", "inspect"]
+
+
+// 
+// register commands
+// 
+
+// create a command for running macros by name
+vscode.commands.registerCommand("macro.run", async () => {
+    let macroNames = Object.keys(macros).filter(each => macros[each] instanceof Array)
+    let result = await window.showQuickPick(macroNames)
+    executeMacro(result)
+})
+
+// command that helps with creating new macros 
+vscode.commands.registerCommand("macro.list-builtin-commands", async () => {
+    let commands = await vscode.commands.getCommands()
+    let result = await window.showQuickPick(commands)
+    if (result != null) {
+        await vscode.commands.executeCommand(result)
+    }
+})
+
+// create a dummy command that works out of the box
+vscode.commands.registerCommand("macro.this.is.a.real.dummy.command", async () => {
+    window.showInformationMessage(`Congratulations you ran the dummy command`)
+})
+
+
+// 
+// helpers
+//
+
 // see https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
@@ -17,13 +56,13 @@ function flushEventStack() {
     return new Promise(r => setTimeout(r, 0))
 }
 
-let activeContext
-let disposables = []
-let macros = {}
-let invalidMacroNames = ["has", "get", "update", "inspect"]
+// 
+// on first load
+// 
 exports.activate = function activate(context) {
     loadMacros(context)
     activeContext = context
+    // whenever settings is changed
     vscode.workspace.onDidChangeConfiguration(() => {
         // dispose of macros
         for (let disposable of disposables) {
@@ -35,6 +74,27 @@ exports.activate = function activate(context) {
 }
 
 exports.deactivate = function deactivate() {}
+
+// 
+// create macros from settings
+// 
+function loadMacros(context) {
+    // get the macros from the settings file
+    macros = vscode.workspace.getConfiguration("macros")
+
+    // look at each macro
+    for (const name in macros) {
+        // skip the things that are not arrays
+        if (!(macros[name] instanceof Array)) {
+            continue
+        }
+        // register each one as a command
+        const disposable = vscode.commands.registerCommand(`macros.${name}`, () => executeMacro(name))
+        context.subscriptions.push(disposable)
+        disposables.push(disposable)
+    }
+}
+
 
 async function executeMacro(name) {
     // iterate over every action in the macro
@@ -53,6 +113,12 @@ async function executeMacro(name) {
                 await eval(`(async()=>{${action.javascript}})()`)
                 await flushEventStack()
                 continue
+            // if its an array, convert the array to a string
+            } else if (action.javascript instanceof Array) {
+                let javacsriptAction = action.javascript.join("\n")
+                await eval(`(async()=>{${javacsriptAction}})()`)
+                await flushEventStack()
+                continue
             }
             //
             // Check for injections
@@ -64,13 +130,11 @@ async function executeMacro(name) {
                     //
                     // Compute the value the user provided
                     //
-                    console.log("starting injection")
                     let value = eval(eachInjection.withResultOf)
                     if (value instanceof Promise) {
                         value = await value
                     }
                     value = `${value}`
-                    console.log("finished injection")
                     //
                     // replace it in the arguments
                     //
@@ -87,8 +151,16 @@ async function executeMacro(name) {
                             actionCopy.args[eachKey] = replacer(actionCopy.args[eachKey])
                         }
                     }
+                    
+                    // convert arrays to strings 
+                    let hiddenConsole = actionCopy.hiddenConsole
+                    if (actionCopy.hiddenConsole instanceof Array) {
+                        hiddenConsole = actionCopy.hiddenConsole.join("\n")
+                    }
+                    hiddenConsole += "\n"
+                    
                     // replace it in the console command
-                    actionCopy.hiddenConsole = replacer(actionCopy.hiddenConsole)
+                    actionCopy.hiddenConsole = replacer(hiddenConsole)
                 }
             }
             //
@@ -100,31 +172,5 @@ async function executeMacro(name) {
     }
 }
 
-function loadMacros(context) {
-    // get the macros from the settings file
-    macros = vscode.workspace.getConfiguration("macros")
 
-    // look at each macro
-    for (const name in macros) {
-        // skip the things that are not arrays
-        if (!(macros[name] instanceof Array)) {
-            continue
-        }
-        // register each one as a command
-        const disposable = vscode.commands.registerCommand(`macros.${name}`, () => executeMacro(name))
-        context.subscriptions.push(disposable)
-        disposables.push(disposable)
-    }
-}
 
-// create a command for running macros by name
-vscode.commands.registerCommand("macro.run", async () => {
-    let macroNames = Object.keys(macros).filter(each => macros[each] instanceof Array)
-    let result = await window.showQuickPick(macroNames)
-    executeMacro(result)
-})
-
-// create a command for running macros by name
-vscode.commands.registerCommand("macro.this.is.a.real.dummy.command", async () => {
-    window.showInformationMessage(`Congratulations you ran the dummy command`)
-})

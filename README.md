@@ -70,6 +70,14 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         },
     ],
     "exampleMacro4" : [
+        {
+            "javascript": [
+                "let response = await window.showInputBox()",
+                "await window.showInformationMessage(`You entered: ${response}`)",
+            ]
+        },
+    ],
+    "exampleMacro4" : [
         // run a hidden console command (runs in the background)
         {
             // NOTE: don't start a command in a hiddenConsole
@@ -77,14 +85,20 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             //       of killing/canceling it
             // 
             // this echo will never be seen
-            "hiddenConsole": "touch .gitignore; echo hello\n"
+            "hiddenConsole": [
+                "touch .gitignore",
+                "echo hello"
+            ]
         },
         // combine javascript and hidden console commands
         {
             "injections" : [
                 { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
             ],
-            "hiddenConsole": "cd \"$currentFolder\";touch .gitignore\n",
+            "hiddenConsole": [
+               "cd \"$currentFolder\"", 
+               "touch .gitignore"
+            ]
         },
     ],
     "exampleWithBashProfile" : [

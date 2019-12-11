@@ -1,0 +1,35 @@
+(using_atk_version): 1.0
+(project):
+    name: Your Project Name Here
+    description: Describe your project here
+    
+    commands: &commands # if you dont know what the & means, see https://blog.daemonl.com/2016/02/yaml.html
+        build: "true" # no build process
+        publish: !language/ruby |
+            require 'atk_toolbox'
+            
+            system "_ build"
+            previous_process_finished_successfully = $?.success?
+            if previous_process_finished_successfully
+                system "project sync"
+                if -"npm version patch"
+                    puts "Publishing"
+                    system "npm publish"
+                    puts "Finished Publishing"
+                end
+            end
+        (setup): echo 'setup command unset' 
+    
+    (advanced_setup):
+        (project_commands):
+            <<: *commands
+        # caveats for a specific OS
+        when(--os is 'mac'):
+            (project_commands):
+                <<: *commands
+        when(--os is 'windows'):
+            (project_commands):
+                <<: *commands
+        when(--os is 'linux'):
+            (project_commands):
+                <<: *commands
