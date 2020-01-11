@@ -156,8 +156,8 @@ async function executeMacro(name) {
                     let hiddenConsole = actionCopy.hiddenConsole
                     if (actionCopy.hiddenConsole instanceof Array) {
                         hiddenConsole = actionCopy.hiddenConsole.join("\n")
+                        hiddenConsole += "\n"
                     }
-                    hiddenConsole += "\n"
                     
                     // replace it in the console command
                     actionCopy.hiddenConsole = replacer(hiddenConsole)
