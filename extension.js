@@ -154,10 +154,13 @@ async function executeMacro(name) {
                     
                     // convert arrays to strings 
                     let hiddenConsole = actionCopy.hiddenConsole
-                    if (actionCopy.hiddenConsole instanceof Array) {
+                    if (hiddenConsole instanceof Array) {
                         hiddenConsole = actionCopy.hiddenConsole.join("\n")
                     }
-                    hiddenConsole += "\n"
+                    if (typeof hiddenConsole == 'string') {
+                        hiddenConsole += "\n"
+                    }
+
                     
                     // replace it in the console command
                     actionCopy.hiddenConsole = replacer(hiddenConsole)

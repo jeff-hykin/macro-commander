@@ -1,9 +1,9 @@
-(using_atk_version): 1.0
+(using_atk_version): 1.1.0
 (project):
-    name: Your Project Name Here
-    description: Describe your project here
+    name: macro-commander
+    description: Keybindings to commandline scripts, along with any VS Code command
     
-    commands: &commands # if you dont know what the & means, see https://blog.daemonl.com/2016/02/yaml.html
+    (commands):
         build: "true" # no build process
         publish: !language/ruby |
             require 'atk_toolbox'
@@ -20,16 +20,5 @@
             end
         (setup): echo 'setup command unset' 
     
-    (advanced_setup):
-        (project_commands):
-            <<: *commands
-        # caveats for a specific OS
-        when(--os is 'mac'):
-            (project_commands):
-                <<: *commands
-        when(--os is 'windows'):
-            (project_commands):
-                <<: *commands
-        when(--os is 'linux'):
-            (project_commands):
-                <<: *commands
+    (paths):
+        project_root: ./
