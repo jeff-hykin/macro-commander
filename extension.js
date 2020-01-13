@@ -155,7 +155,7 @@ async function executeMacro(name) {
                     // convert arrays to strings 
                     let hiddenConsole = actionCopy.hiddenConsole
                     if (hiddenConsole instanceof Array) {
-                        hiddenConsole = actionCopy.hiddenConsole.join("\n")
+                        hiddenConsole = hiddenConsole.join("\n")
                     }
                     if (typeof hiddenConsole == 'string') {
                         hiddenConsole += "\n"

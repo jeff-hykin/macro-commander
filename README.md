@@ -58,7 +58,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
                 { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
             ],
             "command": "workbench.action.terminal.sendSequence",
-            "args": { "text": "echo the curren file is: $currentFile\necho the current folder is: $currentFolder\n" }
+            "args": { "text": "echo the current file is: $currentFile\necho the current folder is: $currentFolder\n" }
         },
     ],
     "exampleMacro3" : [
@@ -77,7 +77,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             ]
         },
     ],
-    "exampleMacro4" : [
+    "exampleMacro5" : [
         // run a hidden console command (runs in the background)
         {
             // NOTE: don't start a command in a hiddenConsole
