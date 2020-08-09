@@ -1,20 +1,22 @@
 ## What does this do?
 It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
-Example sub-actions are; running command line commands, opening a debugging session, pushing git changes, renaming many files, creating smart snippets, formatting the current file and more.
+Example sub-actions are: running command line commands, opening a debugging session, pushing git changes, renaming many files, creating smart snippets, formatting the current file and more.
 
 ## What are some use-case examples?
 - A run command that opens up a terminal, starts an SSH connection, and then runs commands on the SSH server
 - A new-project command that goes to where ever you typically save projects, uses the GUI to ask for the name of the project, creates the folder, creates a .gitignore with your preferences, runs an init command, and then opens the folder in your current VS Code window.
 - A command that opens a project folder, pulls the latest changes, opens several files in that folder, and then displays the recent changes in those files.
-- A folder-specific start command, that pulls the latest changes, installs dependiences, formats files, and then opens the debugger with a specific file.
+- A folder-specific start command, that pulls the latest changes, installs dependences, formats files, and then opens the debugger with a specific file.
 
 ## How do I use it?
-1. Find the name of commands you want to run 
-Do can do this by going to the VS Code keybindings.json
-(go to gear-icon -> keybindings, then press the {}'s in the top right corner)
-All of the `"command":`'s can be copied and pasted into the macro
-2. Open up your VS Code settings.json and create a new section like this:
-(go to gear-icon -> settings, then press the {}'s in the top right corner)
+1. Find the names of commands you want to run.
+You can do this by opening the VS Code keybindings.json file -- 
+Gear-icon -> Keyboard Shortcuts -> press the open-settings icon in the top right corner. 
+(It used to look like {}, but now it looks like a dog-eared page with a wrap-around arrow.) 
+All of the `"command":`'s can be copied and pasted into the macro.
+2. Open your VS Code settings.json and create a new `macros` section -- 
+Gear-icon -> Settings -> open-settings icons in the top right corner.
+
 ```json
 "macros": {
     "exampleMacro1": [
@@ -23,8 +25,8 @@ All of the `"command":`'s can be copied and pasted into the macro
 }
 ```
 3. To run the macro open the command pallet (cmd+shift+P or ctrl+shift+P) and type `run macro` then pick which one you want to run.
-4. Create a keybinding to the macro (*its different from normal keybindings)
-Open up your VS Code keybindings.json, add the name of the macro you just made to a keybinding
+4. Create a keybinding to the macro (its different from normal keybindings) -- 
+Open your VS Code keybindings.json, add the name of the macro you just made to a keybinding.
 NOTE: VS Code will tell you the command is invalid, ignore that and save it anyways
 (see https://github.com/jeff-hykin/macro-commander/issues/1#issuecomment-505951698 as to why)
 ```json
@@ -33,16 +35,35 @@ NOTE: VS Code will tell you the command is invalid, ignore that and save it anyw
   "command": "macros.exampleMacro1"
 }
 ```
-Now whenever those keys are pressed, the macro commands will execute
+Now, whenever those keys are pressed the macro commands will execute.
+
+## Macro Elements: Commands and Modifiers
+
+A macro element can be:
+
+- a command which requires no arguments (quoted string syntax).
+- a `command` with some `args` (json object syntax).
+- a `command`, some `args`, and some `injections` that modify the arguments.
+- a `javascript` script.
+- a shell script that runs in a `hiddenconsole`.
+- a shell script that runs in a `hiddenconsole` and some `injections` that modify the shell commands.
+
+Javascript has access to the `vscode` object, the `window` object and the `path` object (from node path).
+The `vscode` object (`vscode.commands`, `vscode.env`, `vscode.workspace`, `vscode.tasks`, etc.) is documented here: https://code.visualstudio.com/api/references/vscode-api
+The `window` object is actually a synonym for `vscode.window`.
+The javascript runs inside of an async function, meaning you can use the `await` keyword.
+
+Regarding injections, the "withResultOf" argument can be a simple property ("window.activeTextEditor.document.uri.fsPath") or javascript ("await window.showInputBox()").
+
 
 ## What are some macro examples?
 See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
 ```json
 "macros": {
     "exampleMacro1": [
-        // a simple command to open a new terminal
+        // a simple command to open a new terminal (no arguments, so just name the command as a string).
         "workbench.action.terminal.new",
-        // a command with arguments, that sends text to the terminal
+        // a command with arguments, that sends text to the terminal (a json object)
         {
             "command": "workbench.action.terminal.sendSequence", 
             "args": { "text": "echo hello\n" }
@@ -51,7 +72,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
     "exampleMacro2" : [
         // a simple command to open a new terminal
         "workbench.action.terminal.new",
-        // combine javascript and commands
+        // modify the arguments with injections
         {
             "injections" : [
                 { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" },
@@ -90,7 +111,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
                 "echo hello"
             ]
         },
-        // combine javascript and hidden console commands
+        // combine injections and hidden console commands
         {
             "injections" : [
                 { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
@@ -121,8 +142,6 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
                 { "replace": "$currentFileNameNoExtension", "withResultOf": "path.basename(window.activeTextEditor.document.uri.fsPath).replace(/\\.[^/.]+$/, '')" },
                 { "replace": "$currentFileDir", "withResultOf": "path.dirname(window.activeTextEditor.document.uri.fsPath)" },
             ],
-            // I wanted to use aliases from my bash profile
-            // here's an ugly way of doing that
             "hiddenConsole" : "echo $userInput"
         }
     ]
