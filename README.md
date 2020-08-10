@@ -25,17 +25,9 @@ Gear-icon -> Settings -> open-settings icons in the top right corner.
 }
 ```
 3. To run the macro open the command pallet (cmd+shift+P or ctrl+shift+P) and type `run macro` then pick which one you want to run.
-4. Create a keybinding to the macro (its different from normal keybindings) -- 
-Open your VS Code keybindings.json, add the name of the macro you just made to a keybinding.
-NOTE: VS Code will tell you the command is invalid, ignore that and save it anyways
-(see https://github.com/jeff-hykin/macro-commander/issues/1#issuecomment-505951698 as to why)
-```json
-{
-  "key": "ctrl+cmd+/",
-  "command": "macros.exampleMacro1"
-}
-```
-Now, whenever those keys are pressed the macro commands will execute.
+4. To create a keybinding to the macro, simply open the Keyboard Shortcuts (Gear-icon -> Keyboard Shortcuts) and start to type "macros".
+All of the macros have a "macros." prefix.
+
 
 ## Macro Elements: Commands and Modifiers
 A macro element can be:
