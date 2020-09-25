@@ -37,7 +37,7 @@ Now whenever those keys are pressed, the macro commands will execute
 
 ## What are some macro examples?
 See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
-```json
+```jsonc
 "macros": {
     "exampleMacro1": [
         // a simple command to open a new terminal
