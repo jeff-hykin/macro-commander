@@ -121,8 +121,6 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
                 { "replace": "$currentFileNameNoExtension", "withResultOf": "path.basename(window.activeTextEditor.document.uri.fsPath).replace(/\\.[^/.]+$/, '')" },
                 { "replace": "$currentFileDir", "withResultOf": "path.dirname(window.activeTextEditor.document.uri.fsPath)" },
             ],
-            // I wanted to use aliases from my bash profile
-            // here's an ugly way of doing that
             "hiddenConsole" : "echo $userInput"
         }
     ]
