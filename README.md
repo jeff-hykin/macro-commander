@@ -9,8 +9,7 @@ Example sub-actions are; running command line commands, opening a debugging sess
 - A folder-specific start command, that pulls the latest changes, installs dependiences, formats files, and then opens the debugger with a specific file.
 
 ## How do I use it?
-1. Find the name of commands you want to run 
-Do can do this by going to the VS Code keybindings.json
+1. Find the name of commands you want to run. You can do this by going to the VS Code keybindings.json
 (go to gear-icon -> keybindings, then press the {}'s in the top right corner)
 All of the `"command":`'s can be copied and pasted into the macro
 2. Open up your VS Code settings.json and create a new section like this:
