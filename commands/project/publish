@@ -1,14 +1,4 @@
 #!/usr/bin/env bash
 
-root="$FORNIX_FOLDER"
-if [ -z "$root" ]
-then
-    root="$PWD"
-fi
-
-npm version patch \
-    && npm publish --access=public --no-git-checks \
-    && git push &>/dev/null \
-    && git add -A \
-    && git commit -m 'build and version bump' \
-    && git push
+vsce publish --pat "$1" && echo "published on VSCE"
+ovsx publish -p "$2" && echo "published on OVSX"

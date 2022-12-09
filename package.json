@@ -1,4 +1,22 @@
 {
-  "license": "MIT",
-  "main": "main/main.js"
+    "name": "YOUR_EXTENSION_HERE",
+    "displayName": "YOUR_EXTENSION_HERE",
+    "description": "",
+    "version": "0.0.1",
+    "icon": "icon.png",
+    "scripts": {},
+    "main": "main/main.js",
+    "keywords": [],
+    "engines": {
+        "vscode": "^1.0.0"
+    },
+    "author": {
+        "name": "YOUR_NAME"
+    },
+    "publisher": "YOUR_USERNAME",
+    "contributes": {},
+    "dependencies": {
+        "@vscode/vsce": "^2.15.0",
+        "ovsx": "^0.7.1"
+    }
 }
