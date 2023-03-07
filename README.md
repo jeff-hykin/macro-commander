@@ -131,7 +131,74 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             ],
             "hiddenConsole" : "echo $userInput"
         }
-    ]
+    ],
+    "WriteToOutputExample": [
+        {
+            "javascript": [
+                //create a new OUTPUT log, with name "MyLog"
+                "const myOutput = window.createOutputChannel('MyLog'); ",   
+    
+                //write a message to OUTPUT log                              
+                "await myOutput.appendLine('Lorem ipsum dolor sit amet, consectetur adipisci elit.'); ",  
+
+                //show the OUTPUT log       
+                "await myOutput.show(); ",                                                                   
+            ],
+        },
+    ],
+    "replaceAllExample1": [
+        {
+            "javascript": [
+                //save the current clipboard
+                "var oldClip = await vscode.env.clipboard.readText(); ",    
+
+                //copies the selected text to the clipboard
+                "await vscode.commands.executeCommand('editor.action.clipboardCopyAction'); ",
+                "var testoSelezionato = await vscode.env.clipboard.readText(); ",   
+
+                //replace all "gatta" to "##########"
+                "var nuovoTesto = testoSelezionato.replace(/gatta/g, '##########'); ",   
+
+                //paste the new text
+                "if( nuovoTesto != testoSelezionato ) { ",          
+                "   await vscode.env.clipboard.writeText(nuovoTesto); ", 
+                "   await vscode.commands.executeCommand('editor.action.clipboardPasteAction'); ",
+                "} ",          
+
+                //restore the original clipboard
+                "await vscode.env.clipboard.writeText(oldClip); ", 
+            ],
+        },
+    ],
+    "replaceAllExample2": [
+        { 
+            "javascript": [
+                // parameters
+                "var cerca       = 'gatta'; ",
+                "var opzioni     = 'g'; ",             // g = global; i = ignorecase     
+                "var sostituisci = '##########'; ",
+                // get the currently active editor
+                "const myEditor = vscode.window.activeTextEditor; ",
+                "if (myEditor) {",
+                    // perform an edit on the document associated with this text editor
+                    "myEditor.edit(myEditBuilder => { ",
+
+                        // loop for each multi-cursor
+                        "myEditor.selections.forEach(rangeSelezione => {",
+                            // get selected text from a single multi-cursor
+                            "var testoSelezionato = myEditor.document.getText(rangeSelezione);",
+                            // replace all 
+                            "var nuovoTesto = testoSelezionato.replace(new RegExp(cerca, opzioni), sostituisci);",
+                            // if the text has changed, I write it in the document
+                            "if(nuovoTesto != testoSelezionato) { ",
+                                "myEditBuilder.replace(rangeSelezione, nuovoTesto);",
+                            "}",
+                        "});",
+                    "});",
+                "}",
+            ]
+        }
+    ],    
 }
 ```
 
