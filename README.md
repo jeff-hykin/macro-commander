@@ -14,7 +14,7 @@ Example sub-actions are: running command line commands, opening a debugging sess
 All of the `"command":`'s (ex: `"command": "workbench.action.terminal.new"`) can be copied and pasted into the macro
 2. Open up your VS Code settings.json and create a new section like this:
 (go to gear-icon -> settings, then press the {}'s in the top right corner)
-```json
+```jsonc
 "macros": {
     "exampleMacro1": [
         // a simple command to open a new terminal

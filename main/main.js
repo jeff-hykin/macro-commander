@@ -236,6 +236,3 @@ async function executeMacro(name) {
         }
     }
 }
-
-
-
