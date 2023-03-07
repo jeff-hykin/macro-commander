@@ -1,0 +1,12 @@
+**/*
+!main/
+!icon.*
+!package.json
+!README.md
+!LICENSE.md
+!LICENSE
+!LICENSE.txt
+!dist/**
+!src/**
+!source/**
+!*.js
