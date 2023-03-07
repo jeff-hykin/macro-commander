@@ -1,59 +1,68 @@
 {
-    "name": "macro-commander",
-    "displayName": "macro-commander (Command Runner)",
-    "description": "Keybindings to commandline scripts, along with any VS Code command",
-    "icon": "macro-icon.png",
-    "version": "1.3.0",
-    "publisher": "jeff-hykin",
-    "repository": "https://github.com/jeff-hykin/macro-commander",
-    "engines": {
-        "vscode": "^1.5.0"
+  "name": "macro-commander",
+  "displayName": "macro-commander (Command Runner)",
+  "description": "Keybindings to commandline scripts, along with any VS Code command",
+  "icon": "macro-icon.png",
+  "version": "1.3.0",
+  "publisher": "jeff-hykin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeff-hykin/macro-commander.git"
+  },
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "keywords": [
+    "macro",
+    "command",
+    "commands",
+    "automate",
+    "actions",
+    "keybinding",
+    "run"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./main/main.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Macros configuration",
+      "properties": {
+        "macros": {}
+      }
     },
-    "keywords": [
-        "macro",
-        "command",
-        "commands",
-        "automate",
-        "actions",
-        "keybinding",
-        "run"
-    ],
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "Macros configuration",
-            "properties": {
-                "macros": {}
-            }
-        },
-        "commands": [
-            {
-                "command": "macro.run",
-                "title": "Macros: Run A Macro"
-            },
-            {
-                "command": "macro.list-builtin-commands",
-                "title": "Macros: List all the commands that can be used in macros"
-            },
-            {
-                "command": "macro.this.is.a.real.dummy.command",
-                "title": "Macros: A demo command for macro commander"
-            }
-        ]
-    },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "@vscode/vsce": "^2.15.0",
-        "ovsx": "^0.7.1"
-    },
-    "dependencies": {}
+    "commands": [
+      {
+        "command": "macro.run",
+        "title": "Macros: Run A Macro"
+      },
+      {
+        "command": "macro.list-builtin-commands",
+        "title": "Macros: List all the commands that can be used in macros"
+      },
+      {
+        "command": "macro.this.is.a.real.dummy.command",
+        "title": "Macros: A demo command for macro commander"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.15.0",
+    "ovsx": "^0.7.1"
+  },
+  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/jeff-hykin/macro-commander/issues"
+  },
+  "homepage": "https://github.com/jeff-hykin/macro-commander#readme",
+  "author": "",
+  "license": "ISC"
 }
