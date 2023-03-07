@@ -130,7 +130,16 @@ async function executeMacro(name) {
                     //
                     // Compute the value the user provided
                     //
-                    let value = eval(eachInjection.withResultOf)
+                    let value
+                    try {
+                        value = eval(eachInjection.withResultOf)
+                    } catch (error) {
+                        try {
+                            value = await val(`(async ()=>${eachInjection.withResultOf})()`)
+                        } catch (error) {
+                            value = await val(`(async ()=>{${eachInjection.withResultOf};})()`)
+                        }
+                    }
                     if (value instanceof Promise) {
                         value = await value
                     }
