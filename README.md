@@ -136,5 +136,12 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
 ```
 
 ## Who made this?
-The original extension was made by [geddski](http://gedd.ski)
-<br>I modified it to be synchronous, have javascript support, and allow named execution
+The old extension was made by [geddski](http://gedd.ski)
+<br>I modified it to have
+- in-order execution
+- javascript / javascript-injections
+- async await
+- keybindings + named execution 
+- error message pop-ups
+- auto reload when settings was edited
+- and a few other things
