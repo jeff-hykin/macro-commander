@@ -162,6 +162,9 @@ async function executeMacro(name) {
             let actionCopy = JSON.parse(JSON.stringify(action))
             if (action.injections) {
                 for (let eachInjection of action.injections) {
+                    if (eachInjection.withResultOf instanceof Array) {
+                        eachInjection.withResultOf = eachInjection.withResultOf.join("\n")
+                    }
                     //
                     // Compute the value the user provided
                     //
