@@ -11,20 +11,22 @@ Example sub-actions are; running command line commands, opening a debugging sess
 ## How do I use it?
 1. Find the name of commands you want to run. You can do this by going to the VS Code keybindings.json
 (go to gear-icon -> keybindings, then press the {}'s in the top right corner)
-All of the `"command":`'s can be copied and pasted into the macro
+All of the `"command":`'s (ex: `"command": "workbench.action.terminal.new"`) can be copied and pasted into the macro
 2. Open up your VS Code settings.json and create a new section like this:
 (go to gear-icon -> settings, then press the {}'s in the top right corner)
 ```json
 "macros": {
     "exampleMacro1": [
-        "macro.this.is.a.real.dummy.command"
+        // a simple command to open a new terminal
+        // (See lots more examples below)
+        "workbench.action.terminal.new",
     ]
 }
 ```
 3. To run the macro open the command pallet (cmd+shift+P or ctrl+shift+P) and type `run macro` then pick which one you want to run.
 4. Create a keybinding to the macro (*its different from normal keybindings)
-Open up your VS Code keybindings.json, add the name of the macro you just made to a keybinding
-NOTE: VS Code will tell you the command is invalid, ignore that and save it anyways
+Open up your VS Code keybindings.json, add the name of the macro you just made to a keybinding<br>
+NOTE: VS Code will tell you the command is invalid, **ignore that and save it anyways**
 (see https://github.com/jeff-hykin/macro-commander/issues/1#issuecomment-505951698 as to why)
 ```json
 {
@@ -38,16 +40,17 @@ Now whenever those keys are pressed, the macro commands will execute
 See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 
 ```jsonc
 "macros": {
-    "exampleMacro1": [
+    "terminalExample1": [
         // a simple command to open a new terminal
         "workbench.action.terminal.new",
         // a command with arguments, that sends text to the terminal
         {
             "command": "workbench.action.terminal.sendSequence", 
+            // the "text" arg was decided by VS Code (not me)
             "args": { "text": "echo hello\n" }
         },
     ],
-    "exampleMacro2" : [
+    "terminalExample2" : [
         // a simple command to open a new terminal
         "workbench.action.terminal.new",
         // combine javascript and commands
@@ -60,7 +63,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             "args": { "text": "echo the current file is: $currentFile\necho the current folder is: $currentFolder\n" }
         },
     ],
-    "exampleMacro3" : [
+    "userInputExample1" : [
         // javascript execution (see https://code.visualstudio.com/api/extension-capabilities/common-capabilities)
         {
             // this has access to the `vscode` object, the `window` object and the `path` object (from node path)
@@ -68,7 +71,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             "javascript": "window.showInformationMessage(`You entered: ${await window.showInputBox()}`)"
         },
     ],
-    "exampleMacro4" : [
+    "userInputExample2" : [
         {
             "javascript": [
                 "let response = await window.showInputBox()",
@@ -76,7 +79,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             ]
         },
     ],
-    "exampleMacro5" : [
+    "javascriptPlusTerminalExample" : [
         // run a hidden console command (runs in the background)
         {
             // NOTE: don't start a command in a hiddenConsole
@@ -100,14 +103,20 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             ]
         },
     ],
-    "exampleWithBashProfile" : [
+    "terminalWithBashFunctions" : [
         {
             "injections" : [
                 { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" }
             ],
-            // I wanted to use aliases from my bash profile
-            // here's an ugly way of doing that
-            "hiddenConsole" : "bash <<THE_CMD\nsource ~/.bash_profile;cd \"$currentFolder\";\necho now I can use aliases\nTHE_CMD"
+            // I wanted to use aliases defined in my bash profile
+            // here's a hacky way of doing that
+            "hiddenConsole": [
+                "bash <<HEREDOC",
+                "    source ~/.bash_profile",
+                "    cd \"$currentFolder\"",
+                "    echo now I can use aliases",
+                "HEREDOC",
+            ]
         }
     ],
     "exampleOfCommonInjections" : [

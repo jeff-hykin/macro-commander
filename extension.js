@@ -56,6 +56,23 @@ function flushEventStack() {
     return new Promise(r => setTimeout(r, 0))
 }
 
+function cleanUpErrorStack(errorStack) {
+    console.debug(`errorStack is:`,errorStack)
+    return errorStack.replace(
+        /at executeMacro \(.+\/macro-commander\/extension\.js:\d+:\d+\)/g,
+        "",
+    ).replace(
+        /at \S+\/macro-commander\/extension\.js:\d+:\d+/g,
+        "",
+    ).replace(
+        /at process\.processTicksAndRejections \(node:internal\/process\/task_queues:\d+:\d+\)/,
+        "",
+    ).replace(
+        /at async n._executeContributedCommand \(.+\/extensionHostProcess.js:\d+:\d+\)/, 
+        "",
+    )
+}
+
 // 
 // on first load
 // 
@@ -97,8 +114,10 @@ function loadMacros(context) {
 
 
 async function executeMacro(name) {
+    let commandIndex = -1
     // iterate over every action in the macro
     for (const action of macros[name]) {
+        commandIndex += 1
         console.log(`action is:`, action)
         // if its a string assume its a command
         if (typeof action == "string") {
@@ -109,15 +128,31 @@ async function executeMacro(name) {
             //
             // Check if its a javascript macro
             //
-            if (typeof action.javascript == "string") {
-                await eval(`(async()=>{${action.javascript}})()`)
-                await flushEventStack()
-                continue
-            // if its an array, convert the array to a string
-            } else if (action.javascript instanceof Array) {
-                let javacsriptAction = action.javascript.join("\n")
-                await eval(`(async()=>{${javacsriptAction}})()`)
-                await flushEventStack()
+            const isJavascriptAction = Object.keys(action).includes("javascript")
+            if (isJavascriptAction) {
+                let javacsriptAction = ""
+                if (typeof action.javascript == "string") {
+                    javacsriptAction = action.javascript
+                // if its an array, convert the array to a string
+                } else if (action.javascript instanceof Array) {
+                    let javacsriptAction = action.javascript.join("\n")
+                } else {
+                    window.showWarningMessage(
+                        `For the ${name} macro\nThere's a "javascript" section thats not a string or an array but instead: ${JSON.stringify(action.javascript)}`
+                    )
+                    // shutdown the whole operation
+                    return
+                }
+
+                try {
+                    await eval(`(async()=>{${javacsriptAction}})()`)
+                    await flushEventStack()
+                } catch (error) {
+                    window.showWarningMessage(
+                        `For the "${name}" macro\nThere's a "javascript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
+                    )
+                    return
+                }
                 continue
             }
             //
@@ -135,9 +170,24 @@ async function executeMacro(name) {
                         value = eval(eachInjection.withResultOf)
                     } catch (error) {
                         try {
-                            value = await val(`(async ()=>${eachInjection.withResultOf})()`)
+                            value = await eval(`(async ()=>${eachInjection.withResultOf})()`)
                         } catch (error) {
-                            value = await val(`(async ()=>{${eachInjection.withResultOf};})()`)
+                            // if it has multiple statements or a return keyword
+                            if (eachInjection.withResultOf.match(/\breturn\b|\n|;/)) {
+                                try {
+                                    value = await eval(`(async ()=>{${eachInjection.withResultOf};})()`)
+                                } catch (error) {
+                                    window.showWarningMessage(
+                                        `For the "${name}" macro\nin the "${eachInjection.replace}" replacement (section #${commandIndex+1}),\nThere was an error when running it: ${cleanUpErrorStack(error.stack)}`
+                                    )
+                                    return
+                                }
+                            } else {
+                                window.showWarningMessage(
+                                    `For the "${name}" macro\nin the "${eachInjection.replace}" replacement (section #${commandIndex+1}),\nThere was an error when running it: ${cleanUpErrorStack(error.stack)}`
+                                )
+                                return
+                            }
                         }
                     }
                     if (value instanceof Promise) {
