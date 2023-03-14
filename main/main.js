@@ -135,7 +135,7 @@ async function executeMacro(name) {
                     javacsriptAction = action.javascript
                 // if its an array, convert the array to a string
                 } else if (action.javascript instanceof Array) {
-                    let javacsriptAction = action.javascript.join("\n")
+                    javacsriptAction = action.javascript.join("\n")
                 } else {
                     window.showWarningMessage(
                         `For the ${name} macro\nThere's a "javascript" section thats not a string or an array but instead: ${JSON.stringify(action.javascript)}`
