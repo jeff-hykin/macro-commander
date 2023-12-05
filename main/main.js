@@ -2,8 +2,6 @@ const { window } = require("vscode")
 const vscode = require("vscode")
 const { execSync } = require("child_process")
 const path = require("path")
-const fs = require('node:fs');
-const ts = require("typescript")
 
 // 
 // globals
@@ -130,46 +128,6 @@ async function executeMacro(name) {
             //
             // Check if its a javascript macro
             //
-            const isTypescriptAction = Object.keys(action).includes("typescript")
-            if (isTypescriptAction) {
-                let typescriptAction = ""
-                let javascriptAction = ""
-                if (typeof action.typescript == "string") {
-                    if (action.typescript.endsWith(".ts")) {
-                        try {
-                            typescriptAction = fs.readFileSync(action.typescript, 'utf8');
-                            javascriptAction = ts.transpile(typescriptAction);
-                        } catch (err) {
-                            window.showWarningMessage(
-                                `For the "${name}" macro\nThere's a "javascript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
-                            )
-                            return
-                        }
-                    } else {
-                        javascriptAction = ts.transpile(action.typescript);
-                    }
-                } else if (action.typescript instanceof Array) {
-                    javascriptAction = ts.transpile(action.typescript.join("\n"))
-                } else {
-                    window.showWarningMessage(
-                        `For the ${name} macro\nThere's a "typescript" section thats not a string or an array but instead: ${JSON.stringify(action.typescript)}`
-                    )
-                    // shutdown the whole operation
-                    return
-                }
-
-                try {
-                    await eval(`(async()=>{${javascriptAction}})()`)
-                    await flushEventStack()
-                } catch (error) {
-                    window.showWarningMessage(
-                        `For the "${name}" macro\nThere's a "typescript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
-                    )
-                    return
-                }
-                continue
-            }
-
             const isJavascriptAction = Object.keys(action).includes("javascript")
             if (isJavascriptAction) {
                 let javascriptAction = ""
@@ -178,6 +136,8 @@ async function executeMacro(name) {
                     if (action.javascript.endsWith(".js")) {
                         try {
                             javascriptAction = fs.readFileSync(action.javascript, 'utf8');
+                            // Allowing users to have single import for intellisense
+                            javascriptAction = javascriptAction.replace("import * as vscode from 'vscode';", "")
                         } catch (err) {
                             window.showWarningMessage(
                                 `For the "${name}" macro\nThere's a "javascript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
@@ -208,9 +168,6 @@ async function executeMacro(name) {
                 }
                 continue
             }
-
-            
-
             //
             // Check for injections
             //
