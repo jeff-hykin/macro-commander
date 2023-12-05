@@ -58,11 +58,13 @@
     "@vscode/vsce": "^2.15.0",
     "ovsx": "^0.7.1"
   },
-  "dependencies": {},
   "bugs": {
     "url": "https://github.com/jeff-hykin/macro-commander/issues"
   },
   "homepage": "https://github.com/jeff-hykin/macro-commander#readme",
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.3.2"
+  }
 }
