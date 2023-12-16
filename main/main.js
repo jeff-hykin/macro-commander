@@ -130,12 +130,25 @@ async function executeMacro(name) {
             //
             const isJavascriptAction = Object.keys(action).includes("javascript")
             if (isJavascriptAction) {
-                let javacsriptAction = ""
+                let javascriptAction = ""
                 if (typeof action.javascript == "string") {
-                    javacsriptAction = action.javascript
+                    javascriptAction = action.javascript
+                    if (action.javascript.endsWith(".js")) {
+                        try {
+                            javascriptAction = fs.readFileSync(action.javascript, 'utf8');
+                            // Allowing users to have single import for intellisense
+                            javascriptAction = javascriptAction.replace("import * as vscode from 'vscode';", "")
+                        } catch (err) {
+                            window.showWarningMessage(
+                                `For the "${name}" macro\nThere's a "javascript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
+                            )
+                            return
+                        }
+                       
+                    }
                 // if its an array, convert the array to a string
                 } else if (action.javascript instanceof Array) {
-                    javacsriptAction = action.javascript.join("\n")
+                    javascriptAction = action.javascript.join("\n")
                 } else {
                     window.showWarningMessage(
                         `For the ${name} macro\nThere's a "javascript" section thats not a string or an array but instead: ${JSON.stringify(action.javascript)}`
@@ -145,7 +158,7 @@ async function executeMacro(name) {
                 }
 
                 try {
-                    await eval(`(async()=>{${javacsriptAction}})()`)
+                    await eval(`(async()=>{${javascriptAction}})()`)
                     await flushEventStack()
                 } catch (error) {
                     window.showWarningMessage(
