@@ -113,7 +113,8 @@ function loadMacros(context) {
     }
 }
 
-
+const sharedMacroInfo = {}
+const homePath = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']
 async function executeMacro(name) {
     let commandIndex = -1
     // iterate over every action in the macro
@@ -129,24 +130,42 @@ async function executeMacro(name) {
             //
             // Check if its a javascript macro
             //
-            const isJavascriptAction = Object.keys(action).includes("javascript")
+            const keys = Object.keys(action)
+            const isJavascriptAction = keys.includes("javascript") || keys.includes("javascriptPath")
             if (isJavascriptAction) {
                 let javascriptAction = ""
-                if (typeof action.javascript == "string") {
-                    javascriptAction = action.javascript
-                    if (action.javascript.endsWith(".js")) {
-                        try {
-                            javascriptAction = fs.readFileSync(action.javascript, 'utf8');
-                            // Allowing users to have single import for intellisense
-                            javascriptAction = javascriptAction.replace("import * as vscode from 'vscode';", "")
-                        } catch (err) {
-                            window.showWarningMessage(
-                                `For the "${name}" macro\nThere's a "javascript" part (section #${commandIndex+1}), but when I ran it, I got an error: ${cleanUpErrorStack(error.stack)}`
-                            )
-                            return
+                if (typeof action.javascriptPath == "string") {
+                    try {
+                        let javascriptPath = action.javascriptPath
+                        if (javascriptPath.startsWith("~/")||javascriptPath.startsWith("~\\")) {
+                            javascriptPath = path.join(homePath,javascriptPath.slice(1,))
+                        // make relative paths relative to the workspace if there is one
+                        } else if (path.isAbsolute(javascriptPath)) {
+                            // pass
+                        } else {
+                            if (!vscode.workspace.rootPath) {
+                                window.showWarningMessage(
+                                    `TLDR; there's no active workspace so I can't run the workspace file.\n\nFull Explaination: For the "${name}" macro\nThere's a "javascriptPath" part (section #${commandIndex+1}), with this path: ${JSON.stringify(javascriptPath)}. Because that path is a relative path, I try looking it relative to the workspace. But there is no workspace in this window.`
+                                )
+                                return
+                            }
+                            javascriptPath = path.join(vscode.workspace.rootPath, javascriptPath)
+                            if (!fs.existsSync(javascriptPath)) {
+                                window.showWarningMessage(
+                                    `For the "${name}" macro\nThere's a "javascriptPath" part (section #${commandIndex+1}), with this path: ${JSON.stringify(javascriptPath)}. Because that path was a relative path I added the workspace to it (${JSON.stringify(vscode.workspace.rootPath)}). But that file doesn't exist.\n\nInstead of a relative path, maybe try using "~/" at the begining to make it relative to your home folder.`
+                                )
+                                return
+                            }
                         }
-                       
+                        javascriptAction = fs.readFileSync(javascriptPath, 'utf8')
+                    } catch (error) {
+                        window.showWarningMessage(
+                            `For the "${name}" macro\nThere's a "javascriptPath" part (section #${commandIndex+1}), but when I try to read the file ${JSON.stringify(action.javascriptPath)}, I got an error: ${cleanUpErrorStack(error.stack)}`
+                        )
+                        return
                     }
+                } else if (typeof action.javascript == "string") {
+                    javascriptAction = action.javascript
                 // if its an array, convert the array to a string
                 } else if (action.javascript instanceof Array) {
                     javascriptAction = action.javascript.join("\n")

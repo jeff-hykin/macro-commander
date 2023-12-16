@@ -42,6 +42,7 @@ NOTE:
   - the `vscode` object: (`vscode.commands`, `vscode.env`, `vscode.workspace`, `vscode.tasks`, etc.) is documented here: https://code.visualstudio.com/api/
   - the `window` object, a shortcut to `vscode.window`.
   - the `path` object (from node path)
+  - the `fs` object (from node fs)
 
 3. The `"withResultOf"` argument can be a single value (`3.14159 || null`) or multiple statements (`await window.showInputBox(); console.log("hi")`).
 
@@ -87,6 +88,27 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
                 "let response = await window.showInputBox()",
                 "await window.showInformationMessage(`You entered: ${response}`)",
             ]
+        },
+    ],
+    "userInputExample3" : [
+        {
+            "javascriptPath": "~/vs_code_stuff/macros/example3.js",
+            // if you open up that file^  it could contain:
+            //     const { window } = require("vscode")
+            //     const vscode = require("vscode")
+            //     const path = require("path")
+            //     const fs = require("fs")
+            // 
+            //     await window.showInformationMessage(`Howdy!`)
+            
+            // NOTE: you cant use "import" or "export" because this script is evaled! not imported
+        },
+    ],
+    "userInputExample4" : [
+        {
+            "javascriptPath": "./macros/build.js",
+            // this path will be relative to the current WORKSPACE
+            // if there is no active workspace, it will tell you to activate one (e.g. error)
         },
     ],
     "javascriptPlusTerminalExample" : [
