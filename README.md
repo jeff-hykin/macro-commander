@@ -111,6 +111,15 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             // if there is no active workspace, it will tell you to activate one (e.g. error)
         },
     ],
+    "sharedInfo1" : [
+        {
+            // use this varible to share data between macros, and within the same macro
+            "javascript": "sharedMacroInfo.prevMessage = 'howdy'",
+        },
+        {
+            "javascript": "window.showInformationMessage(sharedMacroInfo.prevMessage)",
+        },
+    ],
     "javascriptPlusTerminalExample" : [
         // run a hidden console command (runs in the background)
         {
