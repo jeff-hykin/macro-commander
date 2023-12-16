@@ -2,6 +2,7 @@ const { window } = require("vscode")
 const vscode = require("vscode")
 const { execSync } = require("child_process")
 const path = require("path")
+const fs = require("fs")
 
 // 
 // globals
