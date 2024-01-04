@@ -95,7 +95,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
             "javascript": [
                 "let cursorLineNumbers = window.activeTextEditor.selections.map(each=>each.start.line)",
                 "let cursorCharNumbers = window.activeTextEditor.selections.map(each=>each.start.character)",
-                "let textContent = window.activeTextEditor.document.lineAt(cursorLineNumbers[0])",
+                "let textContent = window.activeTextEditor.document.lineAt(cursorLineNumbers[0]).text",
             ]
         },
     ],
