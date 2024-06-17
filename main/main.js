@@ -11,6 +11,15 @@ let activeContext
 let disposables = []
 let macros = {}
 let invalidMacroNames = ["has", "get", "update", "inspect"]
+const macroTools = {
+    escapeShellArg: function(string) {
+        if (string == null) {
+            return ""
+        } else {
+            return `'${`${string}`.replace(/'/g, `'"'"'`)}'`
+        }
+    },
+}
 
 
 // 

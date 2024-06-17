@@ -43,6 +43,7 @@ NOTE:
   - the `window` object, a shortcut to `vscode.window`.
   - the `path` object (from node path)
   - the `fs` object (from node fs)
+  - the `macroTools` object (helpers from this library)
 
 3. The `"withResultOf"` argument can be a single value (`3.14159 || null`) or multiple statements (`await window.showInputBox(); console.log("hi")`).
 
@@ -67,11 +68,12 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         // combine javascript and commands
         {
             "injections" : [
-                { "replace": "$currentFile", "withResultOf": "window.activeTextEditor.document.uri.fsPath" },
-                { "replace": "$currentFolder", "withResultOf": "vscode.workspace.rootPath" },
+                { "replace": "$selectedText", "withResultOf": "macroTools.escapeShellArg(window.activeTextEditor.document.getText(window.activeTextEditor.selections[0]))" },
+                { "replace": "$currentFile", "withResultOf": "macroTools.escapeShellArg(window.activeTextEditor.document.uri.fsPath)" },
+                { "replace": "$currentFolder", "withResultOf": "macroTools.escapeShellArg(vscode.workspace.rootPath)" },
             ],
             "command": "workbench.action.terminal.sendSequence",
-            "args": { "text": "echo the current file is: $currentFile\necho the current folder is: $currentFolder\n" }
+            "args": { "text": "echo 'you selected' $selectedText\necho 'the current file is: '$currentFile\necho the current folder is: $currentFolder\n" }
         },
     ],
     "userInputExample1" : [
@@ -86,6 +88,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         {
             "javascript": [
                 "let response = await window.showInputBox()",
+                "let selectedText = window.activeTextEditor.document.getText(window.activeTextEditor.selections[0])",
                 "await window.showInformationMessage(`You entered: ${response}`)",
             ]
         },
