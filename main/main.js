@@ -4,6 +4,39 @@ const { execSync } = require("child_process")
 const path = require("path")
 const fs = require("fs")
 
+let jsonData
+const autogeneratePrefix = "-"
+const projectsPackageJsonPath = path.join(__dirname, "..", "package.json")
+function registerCommandsToPackageJson(commands, message=`Reload window to see new macro commands!`) {
+    // lazy init (so doesn't slow down VS Code startup)
+    if (!jsonData) {
+        jsonData = JSON.parse(fs.readFileSync(projectsPackageJsonPath, 'utf8'))
+        if (!jsonData.contributes) {
+            jsonData.contributes = {}
+        }
+        if (!jsonData.contributes.commands) {
+            jsonData.contributes.commands = []
+        }
+    }
+    const jsonBefore = JSON.stringify(jsonData)
+    // remove all the auto-generated entries (in case one was effectively deleted)
+    jsonData.contributes.commands = jsonData.contributes.commands.filter(each => !each.title.startsWith(autogeneratePrefix))
+    for (const {commandName, commandTitle} of commands) {
+        jsonData.contributes.commands = jsonData.contributes.commands.filter(each => each.command != commandName)
+        jsonData.contributes.commands.push({
+            "command": commandName,
+            "title": autogeneratePrefix + commandTitle,
+        })
+    }
+    const jsonAfter = JSON.stringify(jsonData)
+    if (jsonBefore != jsonAfter) {
+        fs.writeFileSync(projectsPackageJsonPath, JSON.stringify(jsonData, null, 4))
+        if (message) {
+            vscode.window.showInformationMessage(message)
+        }
+    }
+}
+
 // 
 // globals
 // 
@@ -110,6 +143,7 @@ function loadMacros(context) {
     macros = vscode.workspace.getConfiguration("macros")
 
     // look at each macro
+    const commandsForPackageJson = []
     for (const name in macros) {
         // skip the things that are not arrays
         if (!(macros[name] instanceof Array)) {
@@ -117,9 +151,11 @@ function loadMacros(context) {
         }
         // register each one as a command
         const disposable = vscode.commands.registerCommand(`macros.${name}`, () => executeMacro(name))
+        commandsForPackageJson.push({commandName: `macros.${name}`, commandTitle: name})
         context.subscriptions.push(disposable)
         disposables.push(disposable)
     }
+    registerCommandsToPackageJson(commandsForPackageJson)
 }
 
 const sharedMacroInfo = {}
