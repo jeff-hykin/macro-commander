@@ -46,6 +46,14 @@
                 "title": "Macros: List all the commands that can be used in macros"
             },
             {
+                "command": "macro.js-to-json",
+                "title": "Macros: JS to JSON"
+            },
+            {
+                "command": "macro.json-to-js",
+                "title": "Macros: JSON to JS"
+            },
+            {
                 "command": "macro.this.is.a.real.dummy.command",
                 "title": "Macros: A demo command for macro commander"
             }

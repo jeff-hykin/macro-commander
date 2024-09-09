@@ -1,8 +1,7 @@
 ## What does this do?
 It lets you write a quick sequence of commands/scripts to automate VS Code tasks.
-Example sub-actions are: running command line commands, opening a debugging session, pushing git changes, renaming many files, creating smart snippets, formatting the current file and more.
 
-## What are some use-case examples?
+## Example Usage (Code Examples are Futher Below)
 - A run command that opens up a terminal, starts an SSH connection, and then runs commands on the SSH server
 - A new-project command that goes to where ever you typically save projects, uses the GUI to ask for the name of the project, creates the folder, creates a .gitignore with your preferences, runs an init command, and then opens the folder in your current VS Code window.
 - A command that opens a project folder, pulls the latest changes, opens several files in that folder, and then displays the recent changes in those files.
@@ -19,6 +18,12 @@ All of the `"command":`'s (ex: `"command": "workbench.action.terminal.new"`) can
     "exampleMacro1": [
         // a simple command to open a new terminal
         "workbench.action.terminal.new",
+        
+        // OR a complex command (e.g. has arguments)
+        { "command": "COMMAND_HERE", "args":/*stuff*/ }
+        
+        // OR javascript
+        { "javascript": [ "window.showInformationMessage('hello')" ] }
     ]
 }
 ```
@@ -26,15 +31,15 @@ All of the `"command":`'s (ex: `"command": "workbench.action.terminal.new"`) can
 4. To create a keybinding to the macro, simply open the Keyboard Shortcuts (Gear-icon -> Keyboard Shortcuts) and start to type "macros". All of the macros have a "macros." prefix.
 
 
-## What is allowed in the array? (Tons of Examples Below)
+## Command Options
 
-A element in the array has the following options:
+Every element in the macro array should be one of these:
 
-- provide a quoted string: which calls a command that requires no arguments.
-- call a command with args using `{"command": "COMMAND_HERE", args:/*stuff*/}` 
-- call a command with javascript injections using `{ "injections": [], "command": "COMMAND_HERE", args:/*stuff*/}` 
-- run javascript directly using `{ "javascript": [] }` 
-- call a hidden console using `{ "injections": [], "hiddenConsole": [] }` 
+- string = simple command
+- command with args is an object like this `{"command": "COMMAND_HERE", "args":/*stuff*/}` 
+- command + javascript using javascript-injections like this:  `{ "injections": [], "command": "COMMAND_HERE", "args":/*stuff*/}` 
+- run javascript likes this: `{ "javascript": [] }` 
+- call a hidden console (childProcess) like this `{ "injections": [], "hiddenConsole": [] }` 
 
 NOTE:
 1. The javascript runs inside of an async function, meaning you can use the `await` keyword
@@ -47,6 +52,11 @@ NOTE:
 
 3. The `"withResultOf"` argument can be a single value (`3.14159 || null`) or multiple statements (`await window.showInputBox(); console.log("hi")`).
 
+## Quality of Life Tools
+
+If you're writing JS macros:
+- Use the "Macros: JS to JSON" command to make it easier to write macros (select JS code, then call the command)
+- Use the "Macros: JSON to JS" command to make it easier to read/edit macros
 
 ## What are some examples?
 See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding-with-macros/) 

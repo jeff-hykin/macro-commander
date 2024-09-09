@@ -48,6 +48,8 @@ const macroTools = {
     escapeShellArg: function(string) {
         if (string == null) {
             return ""
+        } else if (string instanceof Promise) {
+            return string.then(macroTools.escapeShellArg)
         } else {
             return `'${`${string}`.replace(/'/g, `'"'"'`)}'`
         }
@@ -64,6 +66,58 @@ vscode.commands.registerCommand("macro.run", async () => {
     let macroNames = Object.keys(macros).filter(each => macros[each] instanceof Array)
     let result = await window.showQuickPick(macroNames)
     executeMacro(result)
+})
+
+// command that helps with creating new macros 
+const defaultIndent = "                "
+vscode.commands.registerCommand("macro.js-to-json", async () => {
+    const selection = window.activeTextEditor.selections[0]
+    const code = window.activeTextEditor.document.getText(selection)
+    if (typeof code == "string") {
+        const replacementCode = (
+            JSON.stringify(
+                code.split("\n"), null, 4
+            ).split("\n").map(
+                each=>each.trim().startsWith('"') ? `${defaultIndent}${each}` : ""
+            ).join("\n")
+        )
+        await window.activeTextEditor.edit((builder) => {
+            builder.replace(selection, replacementCode)
+        })
+    }
+})
+
+vscode.commands.registerCommand("macro.json-to-js", async () => {
+    const selection = window.activeTextEditor.selections[0]
+    const code = window.activeTextEditor.document.getText(selection)
+    if (typeof code == "string") {
+        let parsedData = []
+        try {
+            parsedData = JSON.parse(code)
+        } catch (error) {
+            // fallback trying to make it work even if there are extra commas, or commas are missing 
+            const middleLines = code.split("\n").filter(each=>(!(each.trim() == '['||each.trim() == ']')))
+            const lines = middleLines.map(each=>{
+                try {
+                    return JSON.parse(each.replace(/,$/, ""))
+                } catch (error) {
+                    return null
+                }
+            })
+            const wasPureMultiline = !lines.some(each=>each==null)
+            if (wasPureMultiline) {
+                parsedData = lines
+            } else {
+                // window.showWarningMessage(error.message)
+                window.showWarningMessage(cleanUpErrorStack(error.stack))
+                return
+            }
+        }
+        const replacementCode = parsedData.join("\n")
+        await window.activeTextEditor.edit((builder) => {
+            builder.replace(selection, replacementCode)
+        })
+    }
 })
 
 // command that helps with creating new macros 
