@@ -63,17 +63,25 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         },
     ],
     "terminalExample2" : [
+        // Run some javascript
+        {
+            "javascript": [
+                // docs for showInputBox: https://vscode-api.js.org/interfaces/vscode.InputBoxOptions.html
+                "sharedMacroInfo.personName = await window.showInputBox({ title: `Whats your name?` })",
+            ]
+        },
         // a simple command to open a new terminal
         "workbench.action.terminal.new",
-        // combine javascript and commands
+        // combine javascript and command
         {
             "injections" : [
+                { "replace": "$personName", "withResultOf": "macroTools.escapeShellArg(sharedMacroInfo.personName)" },
                 { "replace": "$selectedText", "withResultOf": "macroTools.escapeShellArg(window.activeTextEditor.document.getText(window.activeTextEditor.selections[0]))" },
                 { "replace": "$currentFile", "withResultOf": "macroTools.escapeShellArg(window.activeTextEditor.document.uri.fsPath)" },
                 { "replace": "$currentFolder", "withResultOf": "macroTools.escapeShellArg(vscode.workspace.rootPath)" },
             ],
             "command": "workbench.action.terminal.sendSequence",
-            "args": { "text": "echo 'you selected' $selectedText\necho 'the current file is: '$currentFile\necho the current folder is: $currentFolder\n" }
+            "args": { "text": "echo hi $personName\necho 'you selected' $selectedText\necho 'the current file is: '$currentFile\necho the current folder is: $currentFolder\n" }
         },
     ],
     "userInputExample1" : [
