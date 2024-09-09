@@ -66,7 +66,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         // Run some javascript
         {
             "javascript": [
-                "sharedMacroInfo.personName = await window.showInputBox({ title: "Whats your name?" })",
+                "sharedMacroInfo.personName = await window.showInputBox({ title: `Whats your name?` })",
             ]
         },
         // a simple command to open a new terminal
