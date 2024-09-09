@@ -66,6 +66,7 @@ See also [Level up your Coding with Macros](http://gedd.ski/post/level-up-coding
         // Run some javascript
         {
             "javascript": [
+                // docs for showInputBox: https://vscode-api.js.org/interfaces/vscode.InputBoxOptions.html
                 "sharedMacroInfo.personName = await window.showInputBox({ title: `Whats your name?` })",
             ]
         },
